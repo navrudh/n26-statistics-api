@@ -6,21 +6,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @Slf4j
 public class TransactionsService {
 
-    private List<TransactionsBody> transactionsBodyList = new LinkedList<>();
+    private List<TransactionsBody> transactionsBodyList = Collections.synchronizedList(new ArrayList<>());
 
     public synchronized void addTransaction(TransactionsBody transactionsBody) {
         transactionsBodyList.add(transactionsBody);
     }
 
-    public synchronized List<TransactionsBody> getTransactions() {
-        return new LinkedList<>(transactionsBodyList);
+    synchronized List<TransactionsBody> getTransactions() {
+        return Collections.unmodifiableList(transactionsBodyList);
     }
 
     @Scheduled(cron = SchedulerConstants.EVERY_SECOND_CRON)
