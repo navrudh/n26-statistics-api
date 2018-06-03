@@ -1,6 +1,7 @@
 package com.navrudh.n26statisticsapi.service;
 
 import com.navrudh.n26statisticsapi.bean.TransactionsBody;
+import com.navrudh.n26statisticsapi.constant.SchedulerConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,12 @@ public class TransactionsService {
         return new LinkedList<>(transactionsBodyList);
     }
 
-    @Scheduled(cron = "* * * * * *")
-    private synchronized void clearOlderTransactions() {
+    @Scheduled(cron = SchedulerConstants.EVERY_SECOND_CRON)
+    final synchronized void clearOlderTransactions() {
         long now = (System.currentTimeMillis() / 1000) * 1000;
         long beforeSixtySeconds = now - (60) * 1000;
 
-        if (transactionsBodyList.removeIf(transactionsBody -> transactionsBody.getTimestamp() < beforeSixtySeconds
-                || transactionsBody.getTimestamp() > now)) {
+        if (transactionsBodyList.removeIf(transactionsBody -> transactionsBody.getTimestamp() < beforeSixtySeconds)) {
             log.debug("Removed transactions older than 60 seconds");
         }
     }

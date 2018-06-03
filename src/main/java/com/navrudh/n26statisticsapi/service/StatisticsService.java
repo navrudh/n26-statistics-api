@@ -2,6 +2,7 @@ package com.navrudh.n26statisticsapi.service;
 
 import com.navrudh.n26statisticsapi.bean.StatisticsBody;
 import com.navrudh.n26statisticsapi.bean.TransactionsBody;
+import com.navrudh.n26statisticsapi.constant.SchedulerConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ public class StatisticsService {
         return statisticsBody;
     }
 
-    @Scheduled(cron = "* * * * * *")
-    private void computeStatistics() {
+    @Scheduled(cron = SchedulerConstants.EVERY_SECOND_CRON)
+    void computeStatistics() {
         List<TransactionsBody> transactionsBodyList = transactionsService.getTransactions();
 
         double sum = transactionsBodyList.stream().mapToDouble(TransactionsBody::getAmount).sum();
